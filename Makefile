@@ -1,6 +1,6 @@
 all: PhoneNumberMetaData.js
 
-%.js: %.xml
+%.js: %.xml xml2meta.py
 	python xml2meta.py $< > $@
 
 PhoneNumberMetaData.xml:

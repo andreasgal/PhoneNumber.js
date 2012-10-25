@@ -4,17 +4,24 @@
 load("PhoneNumberMetaData.js");
 
 var PhoneNumber = (function (dataBase) {
+  const FILLER_CHARS = /#*()-\s/g;
+  const PLUS_CHARS = /^\++/g;
+  const BACKSLASH = /\\/g;
+
   var regionCache = {};
 
+  // Parse the string encoded meta data into a convenient object
+  // representation.
   function ParseMetaData(countyCode, md) {
-    md = eval(md);
+    md = eval(md.replace(BACKSLASH, "\\\\"));
     md = {
       countryCode: countryCode,
       region: md[0],
-      internationalPrefix: md[1],
+      internationalPrefix: new RegExp("^" + md[1]),
       nationalPrefix: md[2],
-      generalPattern: md[3],
-      formats: md[4]
+      possiblePattern: new RegExp("^" + md[3] + "$"),
+      nationalPattern: new RegExp("^" + md[4] + "$"),
+      formats: md[5]
     };
     regionCache[md.region] = md;
     return md;
@@ -25,7 +32,6 @@ var PhoneNumber = (function (dataBase) {
   // to walk the entire database for this, we cache the result of the lookup
   // for future reference.
   function FindMetaDataForRegion(region) {
-    region = region.toUpperCase();
     // Check in the region cache first. This will find all entries we have
     // already resolved (parsed from a string encoding).
     var md = regionCache[region];
@@ -33,7 +39,6 @@ var PhoneNumber = (function (dataBase) {
       return md;
     for (countryCode in dataBase) {
       var entry = dataBase[countryCode];
-      print(entry);
       // Each entry is a string encoded object of the form '["US..', or
       // an array of strings. We don't want to parse the string here
       // to save memory, so we just substring the region identifier
@@ -43,7 +48,7 @@ var PhoneNumber = (function (dataBase) {
       // an object), and their country code should have been in the cache.
       if (entry instanceof Array) {
         for (var n = 0; n < entry.length; ++n) {
-          if (entry[n].substr(2,2) == region)
+          if (typeof entry[n] == "string" && entry[n].substr(2,2) == region)
             return entry[n] = ParseMetaData(countryCode, entry[n]);
         }
         continue;
@@ -53,9 +58,118 @@ var PhoneNumber = (function (dataBase) {
     }
   }
 
+  // Remove filler characters from a number.
+  function StripNumber(number) {
+    return number.replace(FILLER_CHARS, "");
+  }
+
+  // Check whether the number is valid for the given region.
+  function IsValidNumber(number, md) {
+    return md.possiblePattern.test(number);
+  }
+
+  // Check whether the number is a valid national number for the given region.
+  function IsNationalNumber(number, md) {
+    return IsValidNumber(number, md) && md.nationalPattern.test(number);
+  }
+
+  // Determine the country code a number starts with, or return null if
+  // its not a valid country code.
+  function ParseCountryCode(number) {
+    for (var n = 1; n <= 3; ++n) {
+      var cc = number.substr(0,n);
+      if (dataBase[cc])
+        return cc;
+    }
+    return null;
+  }
+
+  // Parse an international number that starts with the country code. Return
+  // null if the number is not a valid international number.
+  function ParseInternationalNumber(number) {
+    var ret;
+
+    // Parse and strip the country code.
+    var cc = ParseCountryCode(number);
+    if (!cc)
+      return null;
+    number = number.substr(cc.length);
+
+    // Lookup the meta data for the region (or regions) and if the rest of
+    // the number parses for that region, return the parsed number.
+    var entry = dataBase[cc];
+    if (entry instanceof Array) {
+      for (var n = 0; n < entry.length; ++n) {
+        if (typeof entry[n] == "string")
+          entry[n] = ParseMetaData(countryCode, entry[n]);
+        if (ret = ParseNationalNumber(number, entry[n]))
+          return ret;
+      }
+      return null;
+    }
+    if (typeof entry == "string")
+      entry = dataBase[cc] = ParseMetaData(countryCode, entry);
+    return ParseNationalNumber(number, entry);
+  }
+
+  // Parse a national number for a specific region. Return null if the
+  // number is not a valid national number (it might still be a possible
+  // number for parts of that region).
+  function ParseNationalNumber(number, md) {
+    if (!md.possiblePattern.test(number) ||
+        !md.nationalPattern.test(number)) {
+      return null;
+    }
+    // Success.
+    return { region: md, nationalNumber: number };
+  }
+
+  // Parse a number and transform it into the national format, removing any
+  // international dial prefixes and country codes.
+  function ParseNumber(number, defaultRegion) {
+    var ret;
+
+    // Remove formating characters and whitespace.
+    number = StripNumber(number);
+
+    // Lookup the meta data for the given region.
+    var md = FindMetaDataForRegion(defaultRegion.toUpperCase());
+
+    // Detect and strip leading '+'.
+    if (PLUS_CHARS.test(number))
+      return ParseInternationalNumber(number.replace(PLUS_CHARS, ""));
+
+    // See if the number starts with an international prefix, and if the
+    // number resulting from stripping the code is valid, then remove the
+    // prefix and flag the number as international.
+    if (md.internationalPrefix.test(number)) {
+      var possibleNumber = number.replace(md.internationalPrefix, "");
+      if (ret = ParseInternationalNumber(possibleNumber))
+        return ret;
+    }
+
+    // Now lets see if maybe its an international number after all, but
+    // without '+' or the international prefix.
+    if (ret = ParseInternationalNumber(number, md))
+      return ret;
+
+    // This is not an international number. See if its a national one for
+    // the current region.
+    if (ret = ParseNationalNumber(number, md))
+      return ret;
+
+    // If the number matches the possible numbers of the current region,
+    // return it as a possible number.
+    if (md.possiblePattern.test(number))
+      return { number: number };
+
+    // We couldn't parse the number at all.
+    return null;
+  }
+
   return {
-    FindMetaDataForRegion: FindMetaDataForRegion
+    Parse: ParseNumber
   };
 })(PHONE_NUMBER_META_DATA);
 
-print(uneval(PhoneNumber.FindMetaDataForRegion("DE")));
+print(uneval(PhoneNumber.Parse("49451491934", "US")));
