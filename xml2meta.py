@@ -49,7 +49,9 @@ def format(x):
         else:
             intlFormat = ""
         result.append("[" + pattern + "," + format + "," + intlFormat + "]")
-    return "[" + ",".join(result) + "]"
+    if len(result) > 1:
+        return "[" + ",".join(result) + "]"
+    return result[0]
 
 # go through the phone number meta data and convert and filter it into a JS file we will include
 dom = parseString(data)
@@ -57,18 +59,18 @@ territories = dom.getElementsByTagName("phoneNumberMetadata")[0].getElementsByTa
 map = {}
 for territory in territories:
     attr = territory.attributes
-    id = nodeValue(attr.get("id"))
+    region = nodeValue(attr.get("id"))
     countryCode = nodeValue(attr.get("countryCode"))
     internationalPrefix = nodeValue(attr.get("internationalPrefix"))
     nationalPrefix = nodeValue(attr.get("nationalPrefix"))
-    general = pattern(territory.getElementsByTagName("generalDesc"))
+    generalPattern = pattern(territory.getElementsByTagName("generalDesc"))
     formats = format(territory.getElementsByTagName("availableFormats"))
     if not countryCode in map:
         map[countryCode] = []
-    map[countryCode].append("'[{0},{1},{2},{3},{4}]'".format(id,
+    map[countryCode].append("'[{0},{1},{2},{3},{4}]'".format(region,
                                                              internationalPrefix,
                                                              nationalPrefix,
-                                                             general,
+                                                             generalPattern,
                                                              formats))
 
 print("/* Automatically generated. Do not edit. */")
