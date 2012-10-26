@@ -17,3 +17,5 @@ function National(currentRegion, number, expected) {
 National("US", "49451491934", "DE451491934");
 National("US", "+49451491934", "DE451491934");
 National("US", "01149451491934", "DE451491934");
+National("DE", "451491934", "DE451491934");
+National("DE", "0451491934", "DE451491934");

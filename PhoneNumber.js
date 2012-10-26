@@ -27,6 +27,24 @@ var PhoneNumber = (function (dataBase) {
     return md;
   }
 
+  // Parse the string encoded format data into a convenient object
+  // representation.
+  function ParseFormat(md) {
+    var formats = md.formats;
+    for (var n = 0; n < formats.length; ++n) {
+      var format = formats[n];
+      var obj = {
+        pattern: new RegExp("^" + format[0] + "$"),
+        nationalFormat: format[1]
+      }
+      if (format[2])
+        obj.leadingDigits = new RegExp("^" + format[2]);
+      if (format[3])
+        obj.internationalFormat = format[3];
+      formats[n] = format;
+    }
+  }
+
   // Search for the meta data associated with a region identifier ("US") in
   // our database, which is indexed by country code ("1"). Since we have
   // to walk the entire database for this, we cache the result of the lookup
@@ -154,7 +172,13 @@ var PhoneNumber = (function (dataBase) {
       return ret;
 
     // This is not an international number. See if its a national one for
-    // the current region.
+    // the current region. National numbers can start with the national
+    // prefix, or without.
+    var nationalPrefix = md.nationalPrefix;
+    if (nationalPrefix && number.indexOf(nationalPrefix) == 0 &&
+        (ret = ParseNationalNumber(number.substr(nationalPrefix.length), md))) {
+      return ret;
+    }
     if (ret = ParseNationalNumber(number, md))
       return ret;
 
@@ -171,3 +195,5 @@ var PhoneNumber = (function (dataBase) {
     Parse: ParseNumber
   };
 })(PHONE_NUMBER_META_DATA);
+
+print(uneval(PhoneNumber.Parse("49451491934", "US")));
