@@ -61,9 +61,7 @@ def format(x):
             assert len(intlFormat) == 0
             intlFormat = "";
         result.append("[" + ",".join([leadingDigits, pattern, format, intlFormat]) + "]")
-    if len(result) > 1:
-        return "[" + ",".join(result) + "]"
-    return result[0]
+    return "[" + ",".join(result) + "]"
 
 # go through the phone number meta data and convert and filter it into a JS file we will include
 dom = parseString(data)

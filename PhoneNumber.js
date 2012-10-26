@@ -171,5 +171,3 @@ var PhoneNumber = (function (dataBase) {
     Parse: ParseNumber
   };
 })(PHONE_NUMBER_META_DATA);
-
-print(uneval(PhoneNumber.Parse("49451491934", "US")));
