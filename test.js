@@ -5,12 +5,12 @@ load("PhoneNumber.js");
 
 function National(currentRegion, number, expected) {
   var expectedRegion = expected.substr(0, 2);
-  var expectedNationalNumber = expected.substr(2);
+  var expectedNumber = expected.substr(2);
   var parsed = PhoneNumber.Parse(number, currentRegion);
   if (parsed.region.region != expectedRegion ||
-      parsed.nationalNumber != expectedNationalNumber) {
+      parsed.number != expectedNumber) {
     print("got: " + parsed.region.region + "/" + parsed.nationalNumber + " " +
-          "expected: " + expectedRegion + "/" + expectedNationalNumber);
+          "expected: " + expectedRegion + "/" + expectedNumber);
   }
 }
 

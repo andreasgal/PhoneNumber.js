@@ -31,6 +31,10 @@ var PhoneNumber = (function (dataBase) {
   // representation.
   function ParseFormat(md) {
     var formats = md.formats;
+    // Exit early if the format strings were already parsed and
+    // translated earlier.
+    if (typeof formats[0] != "string")
+      return;
     for (var n = 0; n < formats.length; ++n) {
       var format = formats[n];
       var obj = {
@@ -75,6 +79,24 @@ var PhoneNumber = (function (dataBase) {
         return dataBase[countryCode] = ParseMetaData(countryCode, entry);
     }
   }
+
+  function FormatNumber(region, number, intl) {
+    ParseFormat(region);
+  }
+
+  function ParsedNumber(region, number) {
+    this.region = region;
+    this.number = number;
+  }
+
+  ParsedNumber.prototype = {
+    get internationalFormat() {
+      return FormatNumber(this.region, this.number, true);
+    },
+    get nationalFormat() {
+      return FormatNumber(this.region, this.number, false);
+    }
+  };
 
   // Remove filler characters from a number.
   function StripNumber(number) {
@@ -139,7 +161,7 @@ var PhoneNumber = (function (dataBase) {
       return null;
     }
     // Success.
-    return { region: md, nationalNumber: number };
+    return new ParsedNumber(md, number);
   }
 
   // Parse a number and transform it into the national format, removing any
@@ -168,7 +190,7 @@ var PhoneNumber = (function (dataBase) {
 
     // Now lets see if maybe its an international number after all, but
     // without '+' or the international prefix.
-    if (ret = ParseInternationalNumber(number, md))
+    if (ret = ParseInternationalNumber(number))
       return ret;
 
     // This is not an international number. See if its a national one for
@@ -185,7 +207,7 @@ var PhoneNumber = (function (dataBase) {
     // If the number matches the possible numbers of the current region,
     // return it as a possible number.
     if (md.possiblePattern.test(number))
-      return { number: number };
+      return new ParsedNumber(md, number);
 
     // We couldn't parse the number at all.
     return null;
