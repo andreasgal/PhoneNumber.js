@@ -83,32 +83,51 @@ var PhoneNumber = (function (dataBase) {
     }
   }
 
-  function FormatNumber(region, number, intl) {
-    ParseFormat(region);
-    var formats = region.formats;
+  // Format a national number for a given region. The boolean flag "intl"
+  // indicates whether we want the national or international format.
+  function FormatNumber(regionMetaData, number, intl) {
+    // We lazily parse the format description in the meta data for the region,
+    // so make sure to parse it now if we haven't already done so.
+    ParseFormat(regionMetaData);
+    var formats = regionMetaData.formats;
     for (var n = 0; n < formats.length; ++n) {
       var format = formats[n];
+      // The leading digits field is optional. If we don't have it, just
+      // use the matching pattern to qualify numbers.
       if (format.leadingDigits && !format.leadingDigits.test(number))
         continue;
       if (!format.pattern.test(number))
         continue;
       if (intl) {
+        // If there is no international format, just fall back to the national
+        // format.
         var internationalFormat = format.internationalFormat;
         if (!internationalFormat)
           internationalFormat = format.nationalFormat;
-        number = "+" + region.countryCode + " " +
+        // Some regions have numbers that can't be dialed from outside the
+        // country, indicated by "NA" for the international format of that
+        // number format pattern.
+        if (internationalFormat == "NA")
+          return null;
+        // Prepend "+" and the country code.
+        number = "+" + regionMetaData.countryCode + " " +
                  number.replace(format.pattern, internationalFormat);
       } else {
         number = number.replace(format.pattern, format.nationalFormat);
-        var nationalPrefixFormattingRule = region.nationalPrefixFormattingRule;
+        // The region has a national prefix formatting rule, and it can be overwritten
+        // by each actual number format rule.
+        var nationalPrefixFormattingRule = regionMetaData.nationalPrefixFormattingRule;
         if (format.nationalPrefixFormattingRule)
           nationalPrefixFormattingRule = format.nationalPrefixFormattingRule;
-        if (number != "NA" && nationalPrefixFormattingRule) {
+        if (nationalPrefixFormattingRule) {
+          // The prefix formatting rule contains two magic markers, "$NP" and "$FG".
+          // "$NP" will be replaced by the national prefix, and "$FG" with the
+          // first group of numbers.
           var match = number.match(SPLIT_FIRST_GROUP);
           var firstGroup = match[1];
           var rest = match[2];
           var prefix = nationalPrefixFormattingRule;
-          prefix = prefix.replace("$NP", region.nationalPrefix);
+          prefix = prefix.replace("$NP", regionMetaData.nationalPrefix);
           prefix = prefix.replace("$FG", firstGroup);
           number = prefix + rest;
         }
@@ -124,6 +143,10 @@ var PhoneNumber = (function (dataBase) {
     this.number = number;
   }
 
+  // ParsedNumber represents the result of parsing a phone number. We have
+  // two getters on the prototype that format the number in national and
+  // international format. Once called, the getters put a direct property
+  // onto the object, caching the result.
   ParsedNumber.prototype = {
     get internationalFormat() {
       var value = FormatNumber(this.regionMetaData, this.number, true);
