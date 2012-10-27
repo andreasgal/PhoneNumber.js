@@ -31,12 +31,12 @@ var PhoneNumber = (function (dataBase) {
   // representation.
   function ParseFormat(md) {
     var formats = md.formats;
-    // Exit early if the format strings were already parsed and
-    // translated earlier.
-    if (typeof formats[0] != "string")
+    // Bail if we already parsed the format definitions.
+    if (!(formats[0] instanceof Array))
       return;
     for (var n = 0; n < formats.length; ++n) {
       var format = formats[n];
+      print(uneval(format));
       var obj = {
         pattern: new RegExp("^" + format[0] + "$"),
         nationalFormat: format[1]
@@ -45,7 +45,7 @@ var PhoneNumber = (function (dataBase) {
         obj.leadingDigits = new RegExp("^" + format[2]);
       if (format[3])
         obj.internationalFormat = format[3];
-      formats[n] = format;
+      formats[n] = obj;
     }
   }
 
@@ -82,6 +82,23 @@ var PhoneNumber = (function (dataBase) {
 
   function FormatNumber(region, number, intl) {
     ParseFormat(region);
+    var formats = region.formats;
+    for (var n = 0; n < formats.length; ++n) {
+      var format = formats[n];
+      print(number, format.leadingDigits);
+      if (format.leadingDigits && !format.leadingDigits.test(number))
+        continue;
+      if (!format.pattern.test(number))
+        continue;
+      if (intl && !format.internationalFormat)
+        continue;
+      number = number.replace(format.pattern,
+                              intl
+                              ? format.internationalFormat
+                              : format.nationalFormat);
+      return (number == "NA") ? null : number;
+    }
+    return null;
   }
 
   function ParsedNumber(region, number) {
@@ -218,4 +235,6 @@ var PhoneNumber = (function (dataBase) {
   };
 })(PHONE_NUMBER_META_DATA);
 
-print(uneval(PhoneNumber.Parse("49451491934", "US")));
+var x = PhoneNumber.Parse("49451491934", "US");
+print(uneval(x));
+print(x.nationalFormat);
