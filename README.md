@@ -14,3 +14,10 @@ regions, memory use should be pretty close to 60k.
 PhoneNumber.js uses libphonenumber's PhoneNumberMetaData.xml database of known
 phone number formats. Use "make" to download the xml file and translate it
 into PhoneNumber.js's internal format.
+
+# Copyright and license
+
+PhoneNumber.js was written by Andreas Gal <gal@mozilla.com> as part of Mozilla's
+Firefox OS (Boot to Gecko) project and is licensed under the Apache License, Version 2.0.
+
+
