@@ -50,10 +50,10 @@ def format(x):
         pattern = nodeValue(attr.get("pattern"))
         format = text(numberFormat.getElementsByTagName("format")[0].childNodes)
         leadingDigits = numberFormat.getElementsByTagName("leadingDigits");
-        leadingDigitsResult = []
-        for leadingDigit in leadingDigits:
-            leadingDigitsResult.append(strip(text(leadingDigit.childNodes)))
-        leadingDigits = "|".join(leadingDigitsResult)
+        if len(leadingDigits) > 0:
+            leadingDigits = strip(text(leadingDigits[0].childNodes))
+        else:
+            leadingDigits = ""
         intlFormat = numberFormat.getElementsByTagName("intlFormat")
         if len(intlFormat) == 1:
             intlFormat = text(intlFormat[0].childNodes)
