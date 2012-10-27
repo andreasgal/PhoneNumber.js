@@ -120,19 +120,20 @@ var PhoneNumber = (function (dataBase) {
     return null;
   }
 
-  function ParsedNumber(region, number) {
-    this.region = region;
+  function ParsedNumber(regionMetaData, number) {
+    this.region = regionMetaData.region;
+    this.regionMetaData = regionMetaData;
     this.number = number;
   }
 
   ParsedNumber.prototype = {
     get internationalFormat() {
-      var value = FormatNumber(this.region, this.number, true);
+      var value = FormatNumber(this.regionMetaData, this.number, true);
       Object.defineProperty(this, "internationalFormat", { value: value, enumerable: true });
       return value;
     },
     get nationalFormat() {
-      value = FormatNumber(this.region, this.number, false);
+      value = FormatNumber(this.regionMetaData, this.number, false);
       Object.defineProperty(this, "nationalFormat", { value: value, enumerable: true });
       return value;
     }

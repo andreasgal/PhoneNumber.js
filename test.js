@@ -3,19 +3,22 @@
 
 load("PhoneNumber.js");
 
-function National(currentRegion, number, expected) {
-  var expectedRegion = expected.substr(0, 2);
-  var expectedNumber = expected.substr(2);
-  var parsed = PhoneNumber.Parse(number, currentRegion);
-  if (parsed.region.region != expectedRegion ||
-      parsed.number != expectedNumber) {
-    print("got: " + parsed.region.region + "/" + parsed.nationalNumber + " " +
-          "expected: " + expectedRegion + "/" + expectedNumber);
+function Test(currentRegion, dial, region, number, nationalFormat, internationalFormat) {
+  var phoneNumber = PhoneNumber.Parse(dial, currentRegion);
+  if (phoneNumber.region != region ||
+      phoneNumber.number != number ||
+      phoneNumber.nationalFormat != nationalFormat ||
+      phoneNumber.internationalFormat != internationalFormat) {
+    print("expected: " + number + " " + region + " " + nationalFormat + " " + internationalFormat);
+    print("got: " + phoneNumber.number + " " + phoneNumber.region + " " + phoneNumber.nationalFormat + " " + phoneNumber.internationalFormat);
   }
 }
 
-National("US", "49451491934", "DE451491934");
-National("US", "+49451491934", "DE451491934");
-National("US", "01149451491934", "DE451491934");
-National("DE", "451491934", "DE451491934");
-National("DE", "0451491934", "DE451491934");
+// Try a couple german numbers from the US with various access codes.
+Test("US", "49451491934", "DE", "451491934", "0451 491934", "+49 451 491934");
+Test("US", "+49451491934", "DE", "451491934", "0451 491934", "+49 451 491934");
+Test("US", "01149451491934", "DE", "451491934", "0451 491934", "+49 451 491934");
+
+// Now try dialing the same number from within the German region.
+Test("DE", "451491934", "DE", "451491934", "0451 491934", "+49 451 491934");
+Test("DE", "0451491934", "DE", "451491934", "0451 491934", "+49 451 491934");
