@@ -48,6 +48,7 @@ def format(x):
     for numberFormat in x[0].getElementsByTagName("numberFormat"):
         attr = numberFormat.attributes
         pattern = nodeValue(attr.get("pattern"))
+        nationalPrefixFormattingRule = nodeValue(attr.get("nationalPrefixFormattingRule"))
         format = text(numberFormat.getElementsByTagName("format")[0].childNodes)
         leadingDigits = numberFormat.getElementsByTagName("leadingDigits");
         if len(leadingDigits) > 0:
@@ -60,7 +61,8 @@ def format(x):
         else:
             assert len(intlFormat) == 0
             intlFormat = "";
-        result.append("[" + ",".join([pattern, format, leadingDigits, intlFormat]) + "]")
+
+        result.append("[" + ",".join([pattern, format, leadingDigits, nationalPrefixFormattingRule, intlFormat]) + "]")
     return "[" + ",".join(result) + "]"
 
 # go through the phone number meta data and convert and filter it into a JS file we will include
@@ -73,18 +75,20 @@ for territory in territories:
     countryCode = nodeValue(attr.get("countryCode"))
     internationalPrefix = nodeValue(attr.get("internationalPrefix"))
     nationalPrefix = nodeValue(attr.get("nationalPrefix"))
+    nationalPrefixFormattingRule = nodeValue(attr.get("nationalPrefixFormattingRule"))
     possiblePattern = pattern(territory.getElementsByTagName("generalDesc"), "possibleNumberPattern")
     nationalPattern = pattern(territory.getElementsByTagName("generalDesc"), "nationalNumberPattern")
     formats = format(territory.getElementsByTagName("availableFormats"))
     mainCountryForCode = nodeValue(attr.get("mainCountryForCode"));
     if not countryCode in map:
         map[countryCode] = []
-    map[countryCode].append("'[{0},{1},{2},{3},{4},{5}]'".format(region,
-                                                                 internationalPrefix,
-                                                                 nationalPrefix,
-                                                                 possiblePattern,
-                                                                 nationalPattern,
-                                                                 formats))
+    map[countryCode].append("'[{0},{1},{2},{3},{4},{5},{6}]'".format(region,
+                                                                     internationalPrefix,
+                                                                     nationalPrefix,
+                                                                     nationalPrefixFormattingRule,
+                                                                     possiblePattern,
+                                                                     nationalPattern,
+                                                                     formats))
     if len(map[countryCode]) > 1 and mainCountryForCode == "\"true\"":
         x = map[countryCode]
         t = x[0]

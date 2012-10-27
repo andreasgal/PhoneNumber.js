@@ -7,22 +7,26 @@ var PhoneNumber = (function (dataBase) {
   const FILLER_CHARS = /#*()-\s/g;
   const PLUS_CHARS = /^\++/g;
   const BACKSLASH = /\\/g;
+  const SPLIT_FIRST_GROUP = /^(\d+)(.*)$/;
 
   var regionCache = {};
 
   // Parse the string encoded meta data into a convenient object
   // representation.
-  function ParseMetaData(countyCode, md) {
-    md = eval(md.replace(BACKSLASH, "\\\\"));
+  function ParseMetaData(countryCode, md) {
+    var parsed = eval(md.replace(BACKSLASH, "\\\\"));
     md = {
       countryCode: countryCode,
-      region: md[0],
-      internationalPrefix: new RegExp("^" + md[1]),
-      nationalPrefix: md[2],
-      possiblePattern: new RegExp("^" + md[3] + "$"),
-      nationalPattern: new RegExp("^" + md[4] + "$"),
-      formats: md[5]
+      region: parsed[0],
+      internationalPrefix: new RegExp("^" + parsed[1]),
+      possiblePattern: new RegExp("^" + parsed[4] + "$"),
+      nationalPattern: new RegExp("^" + parsed[5] + "$"),
+      formats: parsed[6]
     };
+    if (parsed[2])
+      md.nationalPrefix = parsed[2];
+    if (parsed[3])
+      md.nationalPrefixFormattingRule = parsed[3];
     regionCache[md.region] = md;
     return md;
   }
@@ -36,7 +40,6 @@ var PhoneNumber = (function (dataBase) {
       return;
     for (var n = 0; n < formats.length; ++n) {
       var format = formats[n];
-      print(uneval(format));
       var obj = {
         pattern: new RegExp("^" + format[0] + "$"),
         nationalFormat: format[1]
@@ -44,7 +47,9 @@ var PhoneNumber = (function (dataBase) {
       if (format[2])
         obj.leadingDigits = new RegExp("^" + format[2]);
       if (format[3])
-        obj.internationalFormat = format[3];
+        obj.nationalPrefixFormattingRule = format[3];
+      if (format[4])
+        obj.internationalFormat = format[4];
       formats[n] = obj;
     }
   }
@@ -59,7 +64,7 @@ var PhoneNumber = (function (dataBase) {
     var md = regionCache[region];
     if (md)
       return md;
-    for (countryCode in dataBase) {
+    for (var countryCode in dataBase) {
       var entry = dataBase[countryCode];
       // Each entry is a string encoded object of the form '["US..', or
       // an array of strings. We don't want to parse the string here
@@ -85,17 +90,31 @@ var PhoneNumber = (function (dataBase) {
     var formats = region.formats;
     for (var n = 0; n < formats.length; ++n) {
       var format = formats[n];
-      print(number, format.leadingDigits);
       if (format.leadingDigits && !format.leadingDigits.test(number))
         continue;
       if (!format.pattern.test(number))
         continue;
-      if (intl && !format.internationalFormat)
-        continue;
-      number = number.replace(format.pattern,
-                              intl
-                              ? format.internationalFormat
-                              : format.nationalFormat);
+      if (intl) {
+        var internationalFormat = format.internationalFormat;
+        if (!internationalFormat)
+          internationalFormat = format.nationalFormat;
+        number = "+" + region.countryCode + " " +
+                 number.replace(format.pattern, internationalFormat);
+      } else {
+        number = number.replace(format.pattern, format.nationalFormat);
+        var nationalPrefixFormattingRule = region.nationalPrefixFormattingRule;
+        if (format.nationalPrefixFormattingRule)
+          nationalPrefixFormattingRule = format.nationalPrefixFormattingRule;
+        if (number != "NA" && nationalPrefixFormattingRule) {
+          var match = number.match(SPLIT_FIRST_GROUP);
+          var firstGroup = match[1];
+          var rest = match[2];
+          var prefix = nationalPrefixFormattingRule;
+          prefix = prefix.replace("$NP", region.nationalPrefix);
+          prefix = prefix.replace("$FG", firstGroup);
+          number = prefix + rest;
+        }
+      }
       return (number == "NA") ? null : number;
     }
     return null;
@@ -108,10 +127,14 @@ var PhoneNumber = (function (dataBase) {
 
   ParsedNumber.prototype = {
     get internationalFormat() {
-      return FormatNumber(this.region, this.number, true);
+      var value = FormatNumber(this.region, this.number, true);
+      Object.defineProperty(this, "internationalFormat", { value: value, enumerable: true });
+      return value;
     },
     get nationalFormat() {
-      return FormatNumber(this.region, this.number, false);
+      value = FormatNumber(this.region, this.number, false);
+      Object.defineProperty(this, "nationalFormat", { value: value, enumerable: true });
+      return value;
     }
   };
 
@@ -147,14 +170,14 @@ var PhoneNumber = (function (dataBase) {
     var ret;
 
     // Parse and strip the country code.
-    var cc = ParseCountryCode(number);
-    if (!cc)
+    var countryCode = ParseCountryCode(number);
+    if (!countryCode)
       return null;
-    number = number.substr(cc.length);
+    number = number.substr(countryCode.length);
 
     // Lookup the meta data for the region (or regions) and if the rest of
     // the number parses for that region, return the parsed number.
-    var entry = dataBase[cc];
+    var entry = dataBase[countryCode];
     if (entry instanceof Array) {
       for (var n = 0; n < entry.length; ++n) {
         if (typeof entry[n] == "string")
@@ -165,7 +188,7 @@ var PhoneNumber = (function (dataBase) {
       return null;
     }
     if (typeof entry == "string")
-      entry = dataBase[cc] = ParseMetaData(countryCode, entry);
+      entry = dataBase[countryCode] = ParseMetaData(countryCode, entry);
     return ParseNationalNumber(number, entry);
   }
 
@@ -234,7 +257,3 @@ var PhoneNumber = (function (dataBase) {
     Parse: ParseNumber
   };
 })(PHONE_NUMBER_META_DATA);
-
-var x = PhoneNumber.Parse("49451491934", "US");
-print(uneval(x));
-print(x.nationalFormat);
