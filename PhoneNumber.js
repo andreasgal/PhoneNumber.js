@@ -12,7 +12,7 @@ var PhoneNumber = (function (dataBase) {
   const BACKSLASH = /\\/g;
   const SPLIT_FIRST_GROUP = /^(\d+)(.*)$/;
 
-  var regionCache = {};
+  var regionCache = Object.create(null);
 
   // Parse the string encoded meta data into a convenient object
   // representation.
