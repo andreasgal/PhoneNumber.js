@@ -7,10 +7,24 @@ var PhoneNumber = (function (dataBase) {
 
   const UNICODE_DIGITS = /[\uFF10-\uFF19,\u0660-\u0669,\u06F0-\u06F9]/g;
   const ALPHA_CHARS = /[a-zA-Z]/g;
+  const NON_ALPHA_CHARS = /[^a-zA-Z]/g;
   const NON_DIALABLE_CHARS = /[^+\*\d]/g;
   const PLUS_CHARS = /^[+,\uFF0B]+/g;
   const BACKSLASH = /\\/g;
   const SPLIT_FIRST_GROUP = /^(\d+)(.*)$/;
+
+  // Format of the string encoded meta data. If the name contains "^" or "$"
+  // we will generate a regular expression from the value, with those special
+  // characters as prefix/suffix.
+  const META_DATA_FORMAT = ["region",
+                            "^internationalPrefix",
+                            "nationalPrefix",
+                            "^nationalPrefixForParsing",
+                            "nationalPrefixTransformRule",
+                            "nationalPrefixFormattingRule",
+                            "^possiblePattern$",
+                            "^nationalPattern$",
+                            "formats"];
 
   var regionCache = Object.create(null);
 
@@ -18,22 +32,17 @@ var PhoneNumber = (function (dataBase) {
   // representation.
   function ParseMetaData(countryCode, md) {
     var parsed = eval(md.replace(BACKSLASH, "\\\\"));
-    md = {
-      countryCode: countryCode,
-      region: parsed[0],
-      internationalPrefix: new RegExp("^" + parsed[1]),
-      possiblePattern: new RegExp("^" + parsed[6] + "$"),
-      nationalPattern: new RegExp("^" + parsed[7] + "$"),
-      formats: parsed[8]
-    };
-    if (parsed[2])
-      md.nationalPrefix = parsed[2];
-    if (parsed[3])
-      md.nationalPrefixForParsing = new RegExp("^" + parsed[3]);
-    if (parsed[4])
-      md.nationalPrefixTransformRule = parsed[4];
-    if (parsed[5])
-      md.nationalPrefixFormattingRule = parsed[5];
+    md = { countryCode: countryCode };
+    for (var n = 0; n < META_DATA_FORMAT.length; ++n) {
+      var value = parsed[n];
+      if (!value)
+        continue;
+      var field = META_DATA_FORMAT[n];
+      var fieldAlpha = field.replace(NON_ALPHA_CHARS, "");
+      if (field != fieldAlpha)
+        value = new RegExp(field.replace(fieldAlpha, value));
+      md[fieldAlpha] = value;
+    }
     regionCache[md.region] = md;
     return md;
   }
