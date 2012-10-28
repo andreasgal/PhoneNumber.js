@@ -110,3 +110,6 @@ Format("01149451491934", "US", "451491934", "DE", "0451 491934", "+49 451 491934
 // Now try dialing the same number from within the German region.
 Format("451491934", "DE", "451491934", "DE", "0451 491934", "+49 451 491934");
 Format("0451491934", "DE", "451491934", "DE", "0451 491934", "+49 451 491934");
+
+// Numbers in italy keep the leading 0 in the city code when dialing internationally.
+Format("0577-555-555", "IT", "0577555555", "IT", "05 7755 5555", "+39 05 7755 5555");
