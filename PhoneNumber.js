@@ -2,6 +2,9 @@
 /* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
 
 var PhoneNumber = (function (dataBase) {
+  // Use strict in our context only - users might not want it
+  'use strict';
+
   const FILLER_CHARS = /#*()-\s/g;
   const PLUS_CHARS = /^\++/g;
   const BACKSLASH = /\\/g;
@@ -154,7 +157,7 @@ var PhoneNumber = (function (dataBase) {
       return value;
     },
     get nationalFormat() {
-      value = FormatNumber(this.regionMetaData, this.number, false);
+      var value = FormatNumber(this.regionMetaData, this.number, false);
       Object.defineProperty(this, "nationalFormat", { value: value, enumerable: true });
       return value;
     }
