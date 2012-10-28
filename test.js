@@ -32,6 +32,7 @@ function Format(dial, currentRegion, number, region, nationalFormat, internation
   }
 }
 
+// Test parsing national numbers.
 Parse("033316005", "NZ");
 Parse("03-331 6005", "NZ");
 Parse("03 331 6005", "NZ");
@@ -46,6 +47,27 @@ Parse("64(0)64123456", "NZ");
 // Check that using a "/" is fine in a phone number.
 Parse("123/45678", "DE");
 Parse("123-456-7890", "US");
+
+// Test parsing international numbers.
+Parse("+1 (650) 333-6000", "NZ");
+Parse("1-650-333-6000", "US");
+// Calling the US number from Singapore by using different service providers
+// 1st test: calling using SingTel IDD service (IDD is 001)
+Parse("0011-650-333-6000", "SG");
+// 2nd test: calling using StarHub IDD service (IDD is 008)
+Parse("0081-650-333-6000", "SG");
+// 3rd test: calling using SingTel V019 service (IDD is 019)
+Parse("0191-650-333-6000", "SG");
+// Calling the US number from Poland
+Parse("0~01-650-333-6000", "PL");
+// Using "++" at the start.
+Parse("++1 (650) 333-6000", "PL");
+// Using a full-width plus sign.
+Parse("\uFF0B1 (650) 333-6000", "SG");
+// The whole number, including punctuation, is here represented in full-width form.
+Parse("\uFF0B\uFF11\u3000\uFF08\uFF16\uFF15\uFF10\uFF09" +
+      "\u3000\uFF13\uFF13\uFF13\uFF0D\uFF16\uFF10\uFF10\uFF10",
+      "SG");
 
 // Try a couple german numbers from the US with various access codes.
 Format("49451491934", "US", "451491934", "DE", "0451 491934", "+49 451 491934");

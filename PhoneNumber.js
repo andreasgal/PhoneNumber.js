@@ -5,8 +5,10 @@ var PhoneNumber = (function (dataBase) {
   // Use strict in our context only - users might not want it
   'use strict';
 
-  const FILLER_CHARS = /[^+\d]/g;
-  const PLUS_CHARS = /^\++/g;
+  const UNICODE_DIGITS = /[\uFF10-\uFF19,\u0660-\u0669,\u06F0-\u06F9]/g;
+  const ALPHA_CHARS = /[a-zA-Z]/g;
+  const NON_DIALABLE_CHARS = /[^+\*\d]/g;
+  const PLUS_CHARS = /^[+,\uFF0B]+/g;
   const BACKSLASH = /\\/g;
   const SPLIT_FIRST_GROUP = /^(\d+)(.*)$/;
 
@@ -163,9 +165,20 @@ var PhoneNumber = (function (dataBase) {
     }
   };
 
-  // Remove filler characters from a number.
-  function StripNumber(number) {
-    return number.replace(FILLER_CHARS, "");
+  // Normalize a number by converting unicode numbers and symbols to their
+  // ASCII equivalents and removing all non-dialable characters.
+  function NormalizeNumber(number) {
+    number = number.replace(UNICODE_DIGITS,
+                            function (ch) {
+                              return String.fromCharCode(48 + (ch.charCodeAt(0) & 0xf));
+                            });
+    number = number.replace(ALPHA_CHARS,
+                            function (ch) {
+                              return (ch.toLowerCase().charCodeAt(0) - 97)/3+2 | 0;
+                            });
+    number = number.replace(PLUS_CHARS, "+");
+    number = number.replace(NON_DIALABLE_CHARS, "");
+    return number;
   }
 
   // Check whether the number is valid for the given region.
@@ -235,7 +248,7 @@ var PhoneNumber = (function (dataBase) {
     var ret;
 
     // Remove formating characters and whitespace.
-    number = StripNumber(number);
+    number = NormalizeNumber(number);
 
     // Lookup the meta data for the given region.
     var md = FindMetaDataForRegion(defaultRegion.toUpperCase());
