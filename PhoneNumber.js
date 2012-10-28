@@ -5,7 +5,7 @@ var PhoneNumber = (function (dataBase) {
   // Use strict in our context only - users might not want it
   'use strict';
 
-  const FILLER_CHARS = /#*()-\s/g;
+  const FILLER_CHARS = /[^+\d]/g;
   const PLUS_CHARS = /^\++/g;
   const BACKSLASH = /\\/g;
   const SPLIT_FIRST_GROUP = /^(\d+)(.*)$/;

@@ -4,22 +4,54 @@
 load("PhoneNumberMetaData.js");
 load("PhoneNumber.js");
 
-function Test(currentRegion, dial, region, number, nationalFormat, internationalFormat) {
-  var phoneNumber = PhoneNumber.Parse(dial, currentRegion);
-  if (phoneNumber.region != region ||
-      phoneNumber.number != number ||
-      phoneNumber.nationalFormat != nationalFormat ||
-      phoneNumber.internationalFormat != internationalFormat) {
-    print("expected: " + number + " " + region + " " + nationalFormat + " " + internationalFormat);
-    print("got: " + phoneNumber.number + " " + phoneNumber.region + " " + phoneNumber.nationalFormat + " " + phoneNumber.internationalFormat);
+function Parse(dial, currentRegion) {
+  var result = PhoneNumber.Parse(dial, currentRegion);
+  if (!result) {
+    print("expected: parses");
+    print("got: " + dial + " " + currentRegion);
+  }
+  return result;
+}
+
+function Test(dial, currentRegion, number, region) {
+  var result = Parse(dial, currentRegion);
+  if (result.region != region || result.number != number) {
+    print("expected: " + number + " " + region);
+    print("got: " + result.number + " " + result.region);
+  }
+  return result;
+}
+
+function Format(dial, currentRegion, number, region, nationalFormat, internationalFormat) {
+  var result = Test(dial, currentRegion, number, region);
+  if (result.nationalFormat != nationalFormat ||
+      result.internationalFormat != internationalFormat) {
+    print("expected: " + nationalFormat + " " + internationalFormat);
+    print("got: " + result.nationalFormat + " " + result.internationalFormat);
+    return result;
   }
 }
 
+Parse("033316005", "NZ");
+Parse("03-331 6005", "NZ");
+Parse("03 331 6005", "NZ");
+// Testing international prefixes.
+// Should strip country code.
+Parse("0064 3 331 6005", "NZ");
+// Try again, but this time we have an international number with region rode US. It should
+// recognize the country code and parse accordingly.
+Parse("01164 3 331 6005", "US");
+Parse("+64 3 331 6005", "US");
+Parse("64(0)64123456", "NZ");
+// Check that using a "/" is fine in a phone number.
+Parse("123/45678", "DE");
+Parse("123-456-7890", "US");
+
 // Try a couple german numbers from the US with various access codes.
-Test("US", "49451491934", "DE", "451491934", "0451 491934", "+49 451 491934");
-Test("US", "+49451491934", "DE", "451491934", "0451 491934", "+49 451 491934");
-Test("US", "01149451491934", "DE", "451491934", "0451 491934", "+49 451 491934");
+Format("49451491934", "US", "451491934", "DE", "0451 491934", "+49 451 491934");
+Format("+49451491934", "US", "451491934", "DE", "0451 491934", "+49 451 491934");
+Format("01149451491934", "US", "451491934", "DE", "0451 491934", "+49 451 491934");
 
 // Now try dialing the same number from within the German region.
-Test("DE", "451491934", "DE", "451491934", "0451 491934", "+49 451 491934");
-Test("DE", "0451491934", "DE", "451491934", "0451 491934", "+49 451 491934");
+Format("451491934", "DE", "451491934", "DE", "0451 491934", "+49 451 491934");
+Format("0451491934", "DE", "451491934", "DE", "0451 491934", "+49 451 491934");
