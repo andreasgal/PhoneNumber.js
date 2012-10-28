@@ -82,6 +82,11 @@ Parse("+52 1 33 1234-5678", "MX");
 Parse("044 (33) 1234-5678", "MX");
 Parse("045 33 1234-5678", "MX");
 
+// Test omitting the current region. This is only valid when the number starts
+// with a '+'.
+Parse("+64 3 331 6005");
+Parse("+64 3 331 6005", null);
+
 // Try a couple german numbers from the US with various access codes.
 Format("49451491934", "US", "451491934", "DE", "0451 491934", "+49 451 491934");
 Format("+49451491934", "US", "451491934", "DE", "0451 491934", "+49 451 491934");

@@ -254,12 +254,12 @@ var PhoneNumber = (function (dataBase) {
     // Remove formating characters and whitespace.
     number = NormalizeNumber(number);
 
-    // Lookup the meta data for the given region.
-    var md = FindMetaDataForRegion(defaultRegion.toUpperCase());
-
     // Detect and strip leading '+'.
     if (PLUS_CHARS.test(number))
       return ParseInternationalNumber(number.replace(PLUS_CHARS, ""));
+
+    // Lookup the meta data for the given region.
+    var md = FindMetaDataForRegion(defaultRegion.toUpperCase());
 
     // See if the number starts with an international prefix, and if the
     // number resulting from stripping the code is valid, then remove the
