@@ -154,7 +154,7 @@ var PhoneNumber = (function (dataBase) {
       return value;
     },
     get nationalFormat() {
-      value = FormatNumber(this.regionMetaData, this.number, false);
+      var value = FormatNumber(this.regionMetaData, this.number, false);
       Object.defineProperty(this, "nationalFormat", { value: value, enumerable: true });
       return value;
     }
