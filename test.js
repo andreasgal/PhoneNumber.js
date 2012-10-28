@@ -94,6 +94,9 @@ Parse("+52 1 33 1234-5678", "MX");
 Parse("044 (33) 1234-5678", "MX");
 Parse("045 33 1234-5678", "MX");
 
+// Test that lots of spaces are ok.
+Parse("0 3   3 3 1   6 0 0 5", "NZ");
+
 // Test omitting the current region. This is only valid when the number starts
 // with a '+'.
 Parse("+64 3 331 6005");
