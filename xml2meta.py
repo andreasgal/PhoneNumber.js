@@ -75,7 +75,7 @@ for territory in territories:
     countryCode = nodeValue(attr.get("countryCode"))
     internationalPrefix = nodeValue(attr.get("internationalPrefix"))
     nationalPrefix = nodeValue(attr.get("nationalPrefix"))
-    nationalPrefixForParsing = nodeValue(attr.get("nationalPrefixForParsing"))
+    nationalPrefixForParsing = strip(nodeValue(attr.get("nationalPrefixForParsing")))
     nationalPrefixTransformRule = nodeValue(attr.get("nationalPrefixTransformRule"))
     nationalPrefixFormattingRule = nodeValue(attr.get("nationalPrefixFormattingRule"))
     possiblePattern = pattern(territory.getElementsByTagName("generalDesc"), "possibleNumberPattern")

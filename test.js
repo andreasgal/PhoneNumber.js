@@ -74,6 +74,18 @@ Parse("+39 02-36618 300", "NZ");
 Parse("02-36618 300", "IT");
 Parse("312 345 678", "IT");
 
+// Test parsing numbers in Argentina.
+Parse("+54 9 343 555 1212", "AR");
+Parse("0343 15 555 1212", "AR");
+Parse("+54 9 3715 65 4320", "AR");
+Parse("03715 15 65 4320", "AR");
+Parse("+54 11 3797 0000", "AR");
+Parse("011 3797 0000", "AR");
+Parse("+54 3715 65 4321", "AR");
+Parse("03715 65 4321", "AR");
+Parse("+54 23 1234 0000", "AR");
+Parse("023 1234 0000", "AR");
+
 // Test numbers in Mexico
 Parse("+52 (449)978-0001", "MX");
 Parse("01 (449)978-0001", "MX");
