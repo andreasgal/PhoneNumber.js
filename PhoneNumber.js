@@ -16,38 +16,52 @@ var PhoneNumber = (function (dataBase) {
   // Format of the string encoded meta data. If the name contains "^" or "$"
   // we will generate a regular expression from the value, with those special
   // characters as prefix/suffix.
-  const META_DATA_FORMAT = ["region",
-                            "^internationalPrefix",
-                            "nationalPrefix",
-                            "^nationalPrefixForParsing",
-                            "nationalPrefixTransformRule",
-                            "nationalPrefixFormattingRule",
-                            "^possiblePattern$",
-                            "^nationalPattern$",
-                            "formats"];
+  const META_DATA_ENCODING = ["region",
+                              "^internationalPrefix",
+                              "nationalPrefix",
+                              "^nationalPrefixForParsing",
+                              "nationalPrefixTransformRule",
+                              "nationalPrefixFormattingRule",
+                              "^possiblePattern$",
+                              "^nationalPattern$",
+                              "formats"];
+
+  const FORMAT_ENCODING = ["^pattern$",
+                           "nationalFormat",
+                           "^leadingDigits",
+                           "nationalPrefixFormattingRule",
+                           "internationalFormat"];
 
   var regionCache = Object.create(null);
 
-  // Parse the string encoded meta data into a convenient object
-  // representation.
-  function ParseMetaData(countryCode, md) {
-    var parsed = eval(md.replace(BACKSLASH, "\\\\"));
-    md = { countryCode: countryCode };
-    for (var n = 0; n < META_DATA_FORMAT.length; ++n) {
-      var value = parsed[n];
+  // Parse an array of strings into a convenient object. We store meta
+  // data as arrays since thats much more compact than JSON.
+  function ParseArray(array, encoding, obj) {
+    for (var n = 0; n < encoding.length; ++n) {
+      var value = array[n];
       if (!value)
         continue;
-      var field = META_DATA_FORMAT[n];
+      var field = encoding[n];
       var fieldAlpha = field.replace(NON_ALPHA_CHARS, "");
       if (field != fieldAlpha)
         value = new RegExp(field.replace(fieldAlpha, value));
-      md[fieldAlpha] = value;
+      obj[fieldAlpha] = value;
     }
+    return obj;
+  }
+
+  // Parse string encoded meta data into a convenient object
+  // representation.
+  function ParseMetaData(countryCode, md) {
+    var array = eval(md.replace(BACKSLASH, "\\\\"));
+    md = ParseArray(array,
+                    META_DATA_ENCODING,
+                    { countryCode: countryCode });
     regionCache[md.region] = md;
     return md;
   }
 
-  // Parse the string encoded format data into a convenient object
+  // Parse string encoded format data into a convenient object
   // representation.
   function ParseFormat(md) {
     var formats = md.formats;
@@ -55,18 +69,9 @@ var PhoneNumber = (function (dataBase) {
     if (!(formats[0] instanceof Array))
       return;
     for (var n = 0; n < formats.length; ++n) {
-      var format = formats[n];
-      var obj = {
-        pattern: new RegExp("^" + format[0] + "$"),
-        nationalFormat: format[1]
-      }
-      if (format[2])
-        obj.leadingDigits = new RegExp("^" + format[2]);
-      if (format[3])
-        obj.nationalPrefixFormattingRule = format[3];
-      if (format[4])
-        obj.internationalFormat = format[4];
-      formats[n] = obj;
+      formats[n] = ParseArray(formats[n],
+                              FORMAT_ENCODING,
+                              {});
     }
   }
 
