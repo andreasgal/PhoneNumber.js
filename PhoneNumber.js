@@ -22,14 +22,18 @@ var PhoneNumber = (function (dataBase) {
       countryCode: countryCode,
       region: parsed[0],
       internationalPrefix: new RegExp("^" + parsed[1]),
-      possiblePattern: new RegExp("^" + parsed[4] + "$"),
-      nationalPattern: new RegExp("^" + parsed[5] + "$"),
-      formats: parsed[6]
+      possiblePattern: new RegExp("^" + parsed[6] + "$"),
+      nationalPattern: new RegExp("^" + parsed[7] + "$"),
+      formats: parsed[8]
     };
     if (parsed[2])
       md.nationalPrefix = parsed[2];
     if (parsed[3])
-      md.nationalPrefixFormattingRule = parsed[3];
+      md.nationalPrefixForParsing = new RegExp("^" + parsed[3]);
+    if (parsed[4])
+      md.nationalPrefixTransformRule = parsed[4];
+    if (parsed[5])
+      md.nationalPrefixFormattingRule = parsed[5];
     regionCache[md.region] = md;
     return md;
   }
@@ -274,10 +278,20 @@ var PhoneNumber = (function (dataBase) {
     // This is not an international number. See if its a national one for
     // the current region. National numbers can start with the national
     // prefix, or without.
-    var nationalPrefix = md.nationalPrefix;
-    if (nationalPrefix && number.indexOf(nationalPrefix) == 0 &&
-        (ret = ParseNationalNumber(number.substr(nationalPrefix.length), md))) {
-      return ret;
+    if (md.nationalPrefixForParsing) {
+      // Some regions have specific national prefix parse rules. Apply those.
+      var withoutPrefix = number.replace(md.nationalPrefixForParsing,
+                                         md.nationalPrefixTransformRule);
+      if (ret = ParseNationalNumber(withoutPrefix, md))
+        return ret;
+    } else {
+      // If there is no specific national prefix rule, just strip off the
+      // national prefix from the beginning of the number (if there is one).
+      var nationalPrefix = md.nationalPrefix;
+      if (nationalPrefix && number.indexOf(nationalPrefix) == 0 &&
+          (ret = ParseNationalNumber(number.substr(nationalPrefix.length), md))) {
+        return ret;
+      }
     }
     if (ret = ParseNationalNumber(number, md))
       return ret;

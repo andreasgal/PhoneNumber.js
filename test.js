@@ -69,6 +69,19 @@ Parse("\uFF0B\uFF11\u3000\uFF08\uFF16\uFF15\uFF10\uFF09" +
       "\u3000\uFF13\uFF13\uFF13\uFF0D\uFF16\uFF10\uFF10\uFF10",
       "SG");
 
+// Test parsing with leading zeros.
+Parse("+39 02-36618 300", "NZ");
+Parse("02-36618 300", "IT");
+Parse("312 345 678", "IT");
+
+// Test numbers in Mexico
+Parse("+52 (449)978-0001", "MX");
+Parse("01 (449)978-0001", "MX");
+Parse("(449)978-0001", "MX");
+Parse("+52 1 33 1234-5678", "MX");
+Parse("044 (33) 1234-5678", "MX");
+Parse("045 33 1234-5678", "MX");
+
 // Try a couple german numbers from the US with various access codes.
 Format("49451491934", "US", "451491934", "DE", "0451 491934", "+49 451 491934");
 Format("+49451491934", "US", "451491934", "DE", "0451 491934", "+49 451 491934");

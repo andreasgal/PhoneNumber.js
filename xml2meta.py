@@ -75,6 +75,8 @@ for territory in territories:
     countryCode = nodeValue(attr.get("countryCode"))
     internationalPrefix = nodeValue(attr.get("internationalPrefix"))
     nationalPrefix = nodeValue(attr.get("nationalPrefix"))
+    nationalPrefixForParsing = nodeValue(attr.get("nationalPrefixForParsing"))
+    nationalPrefixTransformRule = nodeValue(attr.get("nationalPrefixTransformRule"))
     nationalPrefixFormattingRule = nodeValue(attr.get("nationalPrefixFormattingRule"))
     possiblePattern = pattern(territory.getElementsByTagName("generalDesc"), "possibleNumberPattern")
     nationalPattern = pattern(territory.getElementsByTagName("generalDesc"), "nationalNumberPattern")
@@ -82,13 +84,15 @@ for territory in territories:
     mainCountryForCode = nodeValue(attr.get("mainCountryForCode"));
     if not countryCode in map:
         map[countryCode] = []
-    map[countryCode].append("'[{0},{1},{2},{3},{4},{5},{6}]'".format(region,
-                                                                     internationalPrefix,
-                                                                     nationalPrefix,
-                                                                     nationalPrefixFormattingRule,
-                                                                     possiblePattern,
-                                                                     nationalPattern,
-                                                                     formats))
+    map[countryCode].append("'[{0},{1},{2},{3},{4},{5},{6},{7},{8}]'".format(region,
+                                                                             internationalPrefix,
+                                                                             nationalPrefix,
+                                                                             nationalPrefixForParsing,
+                                                                             nationalPrefixTransformRule,
+                                                                             nationalPrefixFormattingRule,
+                                                                             possiblePattern,
+                                                                             nationalPattern,
+                                                                             formats))
     if len(map[countryCode]) > 1 and mainCountryForCode == "\"true\"":
         x = map[countryCode]
         t = x[0]
