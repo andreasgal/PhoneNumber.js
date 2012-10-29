@@ -284,11 +284,6 @@ var PhoneNumber = (function (dataBase) {
         return ret;
     }
 
-    // Now lets see if maybe its an international number after all, but
-    // without '+' or the international prefix.
-    if (ret = ParseInternationalNumber(number))
-      return ret;
-
     // This is not an international number. See if its a national one for
     // the current region. National numbers can start with the national
     // prefix, or without.
@@ -314,6 +309,11 @@ var PhoneNumber = (function (dataBase) {
     // return it as a possible number.
     if (md.possiblePattern.test(number))
       return new ParsedNumber(md, number);
+
+    // Now lets see if maybe its an international number after all, but
+    // without '+' or the international prefix.
+    if (ret = ParseInternationalNumber(number))
+      return ret;
 
     // We couldn't parse the number at all.
     return null;
