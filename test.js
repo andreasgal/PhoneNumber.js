@@ -125,8 +125,28 @@ Format("0451491934", "DE", "451491934", "DE", "0451 491934", "+49 451 491934");
 // Numbers in italy keep the leading 0 in the city code when dialing internationally.
 Format("0577-555-555", "IT", "0577555555", "IT", "05 7755 5555", "+39 05 7755 5555");
 
-// Telefonica tests
-Format("612123123", "ES", "612123123", "ES", "612 12 31 23", "+34 612 12 31 23");
-
 // Dialing 911 in the US. This is not a national number.
 CantParse("911", "US");
+
+// ## Spain Tests ## //
+// Mobile phone number
+Format("612123123", "ES", "612123123", "ES", "612 12 31 23", "+34 612 12 31 23");
+// New numbering plan for Mobile in Spain
+Format("712123123", "ES", "712123123", "ES", "712 12 31 23", "+34 712 12 31 23");
+// Landline in Spain
+Format("958123123", "ES", "958123123", "ES", "958 12 31 23", "+34 958 12 31 23");
+
+// ## Brazil Tests ## //
+// Landline from Sao Paulo
+Format("+55 11 35491234", "BR", "35491234", "BR", "11 35491234", "+55 11 35491234");
+// Landline from Rio de Janeiro
+Format("+55 21 2345 2345", "BR", "2345 2345", "BR", "21 2345 2345", "+55 21 2345 2345");
+// Rio de Janeiro Mobile phone
+Format("+55 11 9974-1234", "BR", "9974-1234", "BR", "11 9974-1234", "+55 11 9974-1234");
+// National Mobile Phone without CSP
+Format("11 99615-1234", "BR", "99615-1234", "BR", "11 99615-1234", "+55 11 99615-1234");
+// National Mobile Phone with CSP of VIVO (15)
+Format("015 11 99615-1234", "BR", "99615-1234", "BR", "11 99615-1234", "+55 11 99615-1234");
+// International Call to Spain
+Format("00 15 34 91 483 12 12", "BR", "91 483 12 12", "BR", "91 483 12 12", "+34 91 483 12 12");
+
