@@ -4,6 +4,14 @@
 load("PhoneNumberMetaData.js");
 load("PhoneNumber.js");
 
+function CantParse(dial, currentRegion) {
+  var result = PhoneNumber.Parse(dial, currentRegion);
+  if (result) {
+    print("expected: does not parse");
+    print("got: " + dial + " " + currentRegion);
+  }
+}
+
 function Parse(dial, currentRegion) {
   var result = PhoneNumber.Parse(dial, currentRegion);
   if (!result) {
@@ -13,17 +21,17 @@ function Parse(dial, currentRegion) {
   return result;
 }
 
-function Test(dial, currentRegion, number, region) {
+function Test(dial, currentRegion, nationalNumber, region) {
   var result = Parse(dial, currentRegion);
-  if (result.region != region || result.number != number) {
-    print("expected: " + number + " " + region);
-    print("got: " + result.number + " " + result.region);
+  if (result.region != region || result.nationalNumber != nationalNumber) {
+    print("expected: " + nationalNumber + " " + region);
+    print("got: " + result.nationalNumber + " " + result.region);
   }
   return result;
 }
 
-function Format(dial, currentRegion, number, region, nationalFormat, internationalFormat) {
-  var result = Test(dial, currentRegion, number, region);
+function Format(dial, currentRegion, nationalNumber, region, nationalFormat, internationalFormat) {
+  var result = Test(dial, currentRegion, nationalNumber, region);
   if (result.nationalFormat != nationalFormat ||
       result.internationalFormat != internationalFormat) {
     print("expected: " + nationalFormat + " " + internationalFormat);
@@ -119,3 +127,6 @@ Format("0577-555-555", "IT", "0577555555", "IT", "05 7755 5555", "+39 05 7755 55
 
 // Telefonica tests
 Format("612123123", "ES", "612123123", "ES", "612 12 31 23", "+34 612 12 31 23");
+
+// Dialing 911 in the US. This is not a national number.
+CantParse("911", "US");

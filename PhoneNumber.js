@@ -160,25 +160,33 @@ var PhoneNumber = (function (dataBase) {
     return null;
   }
 
-  function ParsedNumber(regionMetaData, number) {
+  function NationalNumber(regionMetaData, number) {
     this.region = regionMetaData.region;
     this.regionMetaData = regionMetaData;
-    this.number = number;
+    this.nationalNumber = number;
   }
 
-  // ParsedNumber represents the result of parsing a phone number. We have
-  // two getters on the prototype that format the number in national and
+  // NationalNumber represents the result of parsing a phone number. We have
+  // three getters on the prototype that format the number in national and
   // international format. Once called, the getters put a direct property
   // onto the object, caching the result.
-  ParsedNumber.prototype = {
+  NationalNumber.prototype = {
+    // +1 949-726-2896
     get internationalFormat() {
-      var value = FormatNumber(this.regionMetaData, this.number, true);
+      var value = FormatNumber(this.regionMetaData, this.nationalNumber, true);
       Object.defineProperty(this, "internationalFormat", { value: value, enumerable: true });
       return value;
     },
+    // (949) 726-2896
     get nationalFormat() {
-      var value = FormatNumber(this.regionMetaData, this.number, false);
+      var value = FormatNumber(this.regionMetaData, this.nationalNumber, false);
       Object.defineProperty(this, "nationalFormat", { value: value, enumerable: true });
+      return value;
+    },
+    // +19497262896
+    get internationalNumber() {
+      var value = this.internationalFormat.replace(NON_DIALABLE_CHARS, "");
+      Object.defineProperty(this, "nationalNumber", { value: value, enumerable: true });
       return value;
     }
   };
@@ -257,7 +265,7 @@ var PhoneNumber = (function (dataBase) {
       return null;
     }
     // Success.
-    return new ParsedNumber(md, number);
+    return new NationalNumber(md, number);
   }
 
   // Parse a number and transform it into the national format, removing any
@@ -308,7 +316,7 @@ var PhoneNumber = (function (dataBase) {
     // If the number matches the possible numbers of the current region,
     // return it as a possible number.
     if (md.possiblePattern.test(number))
-      return new ParsedNumber(md, number);
+      return new NationalNumber(md, number);
 
     // Now lets see if maybe its an international number after all, but
     // without '+' or the international prefix.
