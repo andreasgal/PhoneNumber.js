@@ -4,6 +4,14 @@
 load("PhoneNumberMetaData.js");
 load("PhoneNumber.js");
 
+function Normalize(dial, expected) {
+  var result = PhoneNumber.Normalize(dial);
+  if (result != expected) {
+    print("expected: " + expected);
+    print("got: " + result);
+  }
+}
+
 function CantParse(dial, currentRegion) {
   var result = PhoneNumber.Parse(dial, currentRegion);
   if (result) {
@@ -130,3 +138,6 @@ Format("612123123", "ES", "612123123", "ES", "612 12 31 23", "+34 612 12 31 23")
 
 // Dialing 911 in the US. This is not a national number.
 CantParse("911", "US");
+
+// Test normalizing numbers. Only 0-9,#* are valid in a phone number.
+Normalize("+ABC # * , 9 _ 1 _0", "+222#*,910");

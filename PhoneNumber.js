@@ -5,11 +5,11 @@ var PhoneNumber = (function (dataBase) {
   // Use strict in our context only - users might not want it
   'use strict';
 
-  const UNICODE_DIGITS = /[\uFF10-\uFF19,\u0660-\u0669,\u06F0-\u06F9]/g;
+  const UNICODE_DIGITS = /[\uFF10-\uFF19\u0660-\u0669\u06F0-\u06F9]/g;
   const ALPHA_CHARS = /[a-zA-Z]/g;
   const NON_ALPHA_CHARS = /[^a-zA-Z]/g;
-  const NON_DIALABLE_CHARS = /[^+\*\d]/g;
-  const PLUS_CHARS = /^[+,\uFF0B]+/g;
+  const NON_DIALABLE_CHARS = /[^,#+\*\d]/g;
+  const PLUS_CHARS = /^[+\uFF0B]+/g;
   const BACKSLASH = /\\/g;
   const SPLIT_FIRST_GROUP = /^(\d+)(.*)$/;
 
@@ -328,6 +328,7 @@ var PhoneNumber = (function (dataBase) {
   }
 
   return {
-    Parse: ParseNumber
+    Parse: ParseNumber,
+    Normalize: NormalizeNumber
   };
 })(PHONE_NUMBER_META_DATA);
