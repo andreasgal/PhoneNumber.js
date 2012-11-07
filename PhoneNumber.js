@@ -277,7 +277,7 @@ var PhoneNumber = (function (dataBase) {
     number = NormalizeNumber(number);
 
     // Detect and strip leading '+'.
-    if (number[0] === '+'))
+    if (number[0] === '+')
       return ParseInternationalNumber(number.replace(PLUS_CHARS, ""));
 
     // Lookup the meta data for the given region.
