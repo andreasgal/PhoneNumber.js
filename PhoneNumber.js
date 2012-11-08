@@ -66,7 +66,7 @@ var PhoneNumber = (function (dataBase) {
   function ParseFormat(md) {
     var formats = md.formats;
     // Bail if we already parsed the format definitions.
-    if (!(formats[0] instanceof Array))
+    if (!(Array.isArray(formats[0])))
       return;
     for (var n = 0; n < formats.length; ++n) {
       formats[n] = ParseArray(formats[n],
@@ -94,7 +94,7 @@ var PhoneNumber = (function (dataBase) {
       // identifiers with that country code. We skip entries that are
       // of type object, because they were already resolved (parsed into
       // an object), and their country code should have been in the cache.
-      if (entry instanceof Array) {
+      if (Array.isArray(entry)) {
         for (var n = 0; n < entry.length; ++n) {
           if (typeof entry[n] == "string" && entry[n].substr(2,2) == region)
             return entry[n] = ParseMetaData(countryCode, entry[n]);
@@ -242,7 +242,7 @@ var PhoneNumber = (function (dataBase) {
     // Lookup the meta data for the region (or regions) and if the rest of
     // the number parses for that region, return the parsed number.
     var entry = dataBase[countryCode];
-    if (entry instanceof Array) {
+    if (Array.isArray(entry)) {
       for (var n = 0; n < entry.length; ++n) {
         if (typeof entry[n] == "string")
           entry[n] = ParseMetaData(countryCode, entry[n]);
@@ -277,7 +277,7 @@ var PhoneNumber = (function (dataBase) {
     number = NormalizeNumber(number);
 
     // Detect and strip leading '+'.
-    if (PLUS_CHARS.test(number))
+    if (number[0] === '+')
       return ParseInternationalNumber(number.replace(PLUS_CHARS, ""));
 
     // Lookup the meta data for the given region.
