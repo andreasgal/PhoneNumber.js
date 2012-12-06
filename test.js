@@ -29,17 +29,6 @@ function Parse(dial, currentRegion) {
   return result;
 }
 
-function ParseWithIntl(dial, currentRegion) {
-  var result = PhoneNumber.Parse(dial, currentRegion);
-  if (!result) {
-  	ok(false, "got: " + dial + " " + currentRegion);
-  } else {
-    ok(result.internationalNumber, "Has International!");
-  	ok(true, "Parses!\n");
-  }
-  return result;
-}
-
 function Test(dial, currentRegion, nationalNumber, region) {
   var result = Parse(dial, currentRegion);
   if (result.region != region || result.nationalNumber != nationalNumber) {
@@ -121,7 +110,7 @@ Parse("+52 1 33 1234-5678", "MX");
 Parse("044 (33) 1234-5678", "MX");
 Parse("045 33 1234-5678", "MX");
 
-ParseWithIntl("4031234567", "CA");
+Parse("4031234567", "CA");
 Parse("(416) 585-4319", "CA");
 Parse("647-967-4357", "CA");
 Parse("416-716-8768", "CA");

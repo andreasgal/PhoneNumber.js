@@ -2,11 +2,12 @@ from array import array
 from optparse import OptionParser
 from xml.dom.minidom import parseString
 import re
+import sys
 
 # parse command line arguments
 use = "Usage: %prog [options] PhoneNumberMetaData.xml"
 parser = OptionParser(usage = use)
-parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=False, help="Set mode to verbose.")
+parser.add_option("-t", "--tests", dest="tests", action="store_true", default=False, help="Emit tests instead of meta data.")
 options, args = parser.parse_args()
 
 # we expect the dictionary name to be present
@@ -69,6 +70,7 @@ def format(x):
 dom = parseString(data)
 territories = dom.getElementsByTagName("phoneNumberMetadata")[0].getElementsByTagName("territories")[0].getElementsByTagName("territory")
 map = {}
+examples = []
 for territory in territories:
     attr = territory.attributes
     region = nodeValue(attr.get("id"))
@@ -98,10 +100,20 @@ for territory in territories:
         t = x[0]
         x[0] = x[len(x)-1]
         x[len(x)-1] = t
+    if region != "\"001\"":
+        for example in territory.getElementsByTagName("exampleNumber"):
+            examples.append("Parse({0}, {1});".format(text(example.childNodes), region))
 
 print("/* Automatically generated. Do not edit. */")
-print("const PHONE_NUMBER_META_DATA = {");
 output = []
+
+print(options)
+if options.tests:
+    for example in examples:
+        print(example)
+    sys.exit()
+
+print("const PHONE_NUMBER_META_DATA = {");
 for cc in map:
     entry = map[cc]
     if len(entry) > 1:
