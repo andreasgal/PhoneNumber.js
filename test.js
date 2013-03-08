@@ -202,3 +202,5 @@ CantParse("911", "US");
 
 // Test normalizing numbers. Only 0-9,#* are valid in a phone number.
 Normalize("+ABC # * , 9 _ 1 _0", "+222#*,910");
+Normalize("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "22233344455566677778889999");
+Normalize("abcdefghijklmnopqrstuvwxyz", "22233344455566677778889999");
