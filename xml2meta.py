@@ -107,7 +107,6 @@ for territory in territories:
 print("/* Automatically generated. Do not edit. */")
 output = []
 
-print(options)
 if options.tests:
     for example in examples:
         print(example)
