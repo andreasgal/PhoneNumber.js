@@ -194,6 +194,9 @@ Format("0451491934", "DE", "451491934", "DE", "0451 491934", "+49 451 491934");
 // Numbers in italy keep the leading 0 in the city code when dialing internationally.
 Format("0577-555-555", "IT", "0577555555", "IT", "05 7755 5555", "+39 05 7755 5555");
 
+// Colombian international number without the leading "+"
+Format("5712234567", "CO", "12234567", "CO", "(1) 2234567", "+57 1 2234567");
+
 // Telefonica tests
 Format("612123123", "ES", "612123123", "ES", "612 12 31 23", "+34 612 12 31 23");
 
