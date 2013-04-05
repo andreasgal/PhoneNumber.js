@@ -86,7 +86,7 @@ IsPlain("123 ext:1", false);
 IsPlain("123 ext:1#", false);
 IsPlain("123-1#", false);
 IsPlain("123 1#", false);
-IsPlain("123 12345#", fals);
+IsPlain("123 12345#", false);
 IsPlain("123 +123456#", false);
 // Test parsing national numbers.
 Parse("033316005", "NZ");
