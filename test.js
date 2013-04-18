@@ -209,6 +209,9 @@ Format("997654321", "CL", "997654321", "CL", "(99) 765 4321", "+56 99 765 4321")
 // Dialing 911 in the US. This is not a national number.
 CantParse("911", "US");
 
+// China mobile number with a 0 in it
+Format("15955042864", "CN", "15955042864", "CN", "0159 5504 2864", "+86 159 5504 2864");
+
 // Test normalizing numbers. Only 0-9,#* are valid in a phone number.
 Normalize("+ABC # * , 9 _ 1 _0", "+222#*,910");
 Normalize("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "22233344455566677778889999");
