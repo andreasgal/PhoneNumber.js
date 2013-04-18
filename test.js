@@ -4,10 +4,10 @@
 load("PhoneNumberMetaData.js");
 load("PhoneNumber.js");
 
-function IsViable(dial, expected) {
-  var result = PhoneNumber.IsViable(dial);
+function IsPlain(dial, expected) {
+  var result = PhoneNumber.IsPlain(dial);
   if (result != expected) {
-    print("expected: " + expected);
+    print(dial + ", expected: " + expected);
     print("got: " + result);
   }
 }
@@ -57,37 +57,37 @@ function Format(dial, currentRegion, nationalNumber, region, nationalFormat, int
 }
 
 // Test whether could a string be a phone number.
-IsViable(null, false);
-IsViable("", false);
-IsViable("1", false);
-IsViable("*2", true); // Real number used in Venezuela
-IsViable("*8", true); // Real number used in Venezuela
-IsViable("12", true); // MIN_LENGTH_PHONE_NUMBER
-IsViable("123", true); // MIN_LENGTH_PHONE_NUMBER
-IsViable("1a2", false);
-IsViable("12a", false);
-IsViable("1234", true); // MIN_LENGTH_PHONE_NUMBER
-IsViable("123a", true);
-IsViable("+", false);
-IsViable("+1", false);
-IsViable("+12", false);
-IsViable("+123", true);
-IsViable("()123", true);
-IsViable("(1)23", true);
-IsViable("(12)3", true);
-IsViable("(123)", true);
-IsViable("(123)4", true);
-IsViable("(123)4", true);
-IsViable("123;ext=", false);
-IsViable("123;ext=1", true);
-IsViable("123;ext=1234567", true);
-IsViable("123;ext=12345678", false);
-IsViable("123 ext:1", true);
-IsViable("123 ext:1#", true);
-IsViable("123-1#", true);
-IsViable("123 1#", true);
-IsViable("123 12345#", true);
-IsViable("123 +123456#", false);
+IsPlain(null, false);
+IsPlain("", false);
+IsPlain("1", true);
+IsPlain("*2", true); // Real number used in Venezuela
+IsPlain("*8", true); // Real number used in Venezuela
+IsPlain("12", true);
+IsPlain("123", true);
+IsPlain("1a2", false);
+IsPlain("12a", false);
+IsPlain("1234", true);
+IsPlain("123a", false);
+IsPlain("+", true);
+IsPlain("+1", true);
+IsPlain("+12", true);
+IsPlain("+123", true);
+IsPlain("()123", false);
+IsPlain("(1)23", false);
+IsPlain("(12)3", false);
+IsPlain("(123)", false);
+IsPlain("(123)4", false);
+IsPlain("(123)4", false);
+IsPlain("123;ext=", false);
+IsPlain("123;ext=1", false);
+IsPlain("123;ext=1234567", false);
+IsPlain("123;ext=12345678", false);
+IsPlain("123 ext:1", false);
+IsPlain("123 ext:1#", false);
+IsPlain("123-1#", false);
+IsPlain("123 1#", false);
+IsPlain("123 12345#", false);
+IsPlain("123 +123456#", false);
 // Test parsing national numbers.
 Parse("033316005", "NZ");
 Parse("03-331 6005", "NZ");
