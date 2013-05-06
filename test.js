@@ -46,6 +46,16 @@ function Test(dial, currentRegion, nationalNumber, region) {
   return result;
 }
 
+function TestProperties(dial, currentRegion) {
+  var result = PhoneNumber.Parse(dial, currentRegion);
+  if (result) {
+    var tmp = result.internationalFormat;
+    tmp = result.internationalNumber;
+    tmp = result.nationalNumber;
+    tmp = result.nationalFormat;
+  }
+}
+
 function Format(dial, currentRegion, nationalNumber, region, nationalFormat, internationalFormat) {
   var result = Test(dial, currentRegion, nationalNumber, region);
   if (result.nationalFormat != nationalFormat ||
@@ -88,6 +98,10 @@ IsPlain("123-1#", false);
 IsPlain("123 1#", false);
 IsPlain("123 12345#", false);
 IsPlain("123 +123456#", false);
+
+// Getting international number back from intl number.
+TestProperties("+13442074");
+
 // Test parsing national numbers.
 Parse("033316005", "NZ");
 Parse("03-331 6005", "NZ");
