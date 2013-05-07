@@ -67,6 +67,9 @@ var PhoneNumber = (function (dataBase) {
   // representation.
   function ParseFormat(md) {
     var formats = md.formats;
+    if (!formats) {
+      return null;
+    }
     // Bail if we already parsed the format definitions.
     if (!(Array.isArray(formats[0])))
       return;
@@ -129,6 +132,9 @@ var PhoneNumber = (function (dataBase) {
     // so make sure to parse it now if we haven't already done so.
     ParseFormat(regionMetaData);
     var formats = regionMetaData.formats;
+    if (!formats) {
+      return null;
+    }
     for (var n = 0; n < formats.length; ++n) {
       var format = formats[n];
       // The leading digits field is optional. If we don't have it, just
