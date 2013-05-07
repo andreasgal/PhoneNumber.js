@@ -169,12 +169,14 @@ var PhoneNumber = (function (dataBase) {
           // "$NP" will be replaced by the national prefix, and "$FG" with the
           // first group of numbers.
           var match = number.match(SPLIT_FIRST_GROUP);
-          var firstGroup = match[1];
-          var rest = match[2];
-          var prefix = nationalPrefixFormattingRule;
-          prefix = prefix.replace("$NP", regionMetaData.nationalPrefix);
-          prefix = prefix.replace("$FG", firstGroup);
-          number = prefix + rest;
+          if (match) {
+            var firstGroup = match[1];
+            var rest = match[2];
+            var prefix = nationalPrefixFormattingRule;
+            prefix = prefix.replace("$NP", regionMetaData.nationalPrefix);
+            prefix = prefix.replace("$FG", firstGroup);
+            number = prefix + rest;
+          }
         }
       }
       return (number == "NA") ? null : number;
