@@ -66,6 +66,22 @@ function Format(dial, currentRegion, nationalNumber, region, nationalFormat, int
   }
 }
 
+function AllEqual(list, currentRegion) {
+  for (var n = 0; n < list.length; ++n) {
+    var parsed = Parse(list[n], currentRegion);
+    if (!parsed) {
+      print("can't parse: " + list[n]);
+      return;
+    }
+    list[n] = parsed.nationalFormat;
+  }
+  for (var n = 1; n < list.length; ++n) {
+    if (list[0] != list[n]) {
+      print("mismatch: " + list[0] + " and " + list[n]);
+    }
+  }
+}
+
 // Test whether could a string be a phone number.
 IsPlain(null, false);
 IsPlain("", false);
@@ -230,3 +246,7 @@ Format("15955042864", "CN", "15955042864", "CN", "0159 5504 2864", "+86 159 5504
 Normalize("+ABC # * , 9 _ 1 _0", "+222#*,910");
 Normalize("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "22233344455566677778889999");
 Normalize("abcdefghijklmnopqrstuvwxyz", "22233344455566677778889999");
+
+// 8 and 9 digit numbers with area code in Brazil with collect call prefix (90)
+AllEqual(["01187654321","0411187654321","551187654321","90411187654321","+551187654321"],"BR");
+AllEqual(["011987654321","04111987654321","5511987654321","904111987654321","+5511987654321"],"BR")
