@@ -66,6 +66,15 @@ function Format(dial, currentRegion, nationalNumber, region, nationalFormat, int
   }
 }
 
+function IsEqual(lhs, rhs, currentRegion) {
+  if (lhs !== rhs) {
+    print("expected: " + rhs);
+    print("got: " + lhs);
+    return false;
+  }
+  return true;
+}
+
 function AllEqual(list, currentRegion) {
   for (var n = 0; n < list.length; ++n) {
     var parsed = Parse(list[n], currentRegion);
@@ -250,3 +259,7 @@ Normalize("abcdefghijklmnopqrstuvwxyz", "22233344455566677778889999");
 // 8 and 9 digit numbers with area code in Brazil with collect call prefix (90)
 AllEqual(["01187654321","0411187654321","551187654321","90411187654321","+551187654321"],"BR");
 AllEqual(["011987654321","04111987654321","5511987654321","904111987654321","+5511987654321"],"BR")
+
+IsEqual(PhoneNumber.Normalize("123abc", true), "123");
+IsEqual(PhoneNumber.Normalize("12345", true), "12345");
+IsEqual(PhoneNumber.Normalize("1abcd", false), "12223");
