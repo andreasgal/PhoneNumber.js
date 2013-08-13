@@ -2,6 +2,7 @@
 /* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
 
 load("PhoneNumberMetaData.js");
+load("PhoneNumberNormalizer.js")
 load("PhoneNumber.js");
 
 function IsPlain(dial, expected) {
@@ -13,7 +14,7 @@ function IsPlain(dial, expected) {
 }
 
 function Normalize(dial, expected) {
-  var result = PhoneNumber.Normalize(dial);
+  var result = PhoneNumberNormalizer.Normalize(dial);
   if (result != expected) {
     print("expected: " + expected);
     print("got: " + result);
@@ -260,6 +261,6 @@ Normalize("abcdefghijklmnopqrstuvwxyz", "22233344455566677778889999");
 AllEqual(["01187654321","0411187654321","551187654321","90411187654321","+551187654321"],"BR");
 AllEqual(["011987654321","04111987654321","5511987654321","904111987654321","+5511987654321"],"BR")
 
-IsEqual(PhoneNumber.Normalize("123abc", true), "123");
-IsEqual(PhoneNumber.Normalize("12345", true), "12345");
-IsEqual(PhoneNumber.Normalize("1abcd", false), "12223");
+IsEqual(PhoneNumberNormalizer.Normalize("123abc", true), "123");
+IsEqual(PhoneNumberNormalizer.Normalize("12345", true), "12345");
+IsEqual(PhoneNumberNormalizer.Normalize("1abcd", false), "12223");
