@@ -2,6 +2,7 @@
 /* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
 
 load("PhoneNumberMetaData.js");
+load("PhoneNumberNormalizer.js");
 load("PhoneNumber.js");
 
 let gCountryList;
