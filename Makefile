@@ -1,10 +1,10 @@
-all: PhoneNumberMetaData.js
+all: PhoneNumberMetadata.js
 
 %.js: %.xml xml2meta.py
 	python xml2meta.py $< > $@
 
-PhoneNumberMetaData.xml:
+PhoneNumberMetadata.xml:
 	curl http://libphonenumber.googlecode.com/svn/trunk/resources/PhoneNumberMetadata.xml > $@
 
 clean:
-	rm -f PhoneNumberMetaData.xml *~
+	rm -f PhoneNumberMetadata.xml *~

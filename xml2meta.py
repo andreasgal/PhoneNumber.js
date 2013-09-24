@@ -5,7 +5,7 @@ import re
 import sys
 
 # parse command line arguments
-use = "Usage: %prog [options] PhoneNumberMetaData.xml"
+use = "Usage: %prog [options] PhoneNumberMetadata.xml"
 parser = OptionParser(usage = use)
 parser.add_option("-t", "--tests", dest="tests", action="store_true", default=False, help="Emit tests instead of meta data.")
 options, args = parser.parse_args()
