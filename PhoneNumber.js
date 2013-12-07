@@ -53,7 +53,7 @@ var PhoneNumber = (function (dataBase) {
   // Parse string encoded meta data into a convenient object
   // representation.
   function ParseMetaData(countryCode, md) {
-    var array = eval(md.replace(BACKSLASH, "\\\\"));
+    var array = JSON.parse(md);
     md = ParseArray(array,
                     META_DATA_ENCODING,
                     { countryCode: countryCode });

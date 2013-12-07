@@ -12,8 +12,24 @@ memory use should be below 200k. If you mostly format numbers from one or a few
 regions, memory use should be pretty close to 60k.
 
 PhoneNumber.js uses libphonenumber's PhoneNumberMetadata.xml database of known
-phone number formats. Use "make" to download the xml file and translate it
+phone number formats. Use "grunt" to download the xml file and translate it
 into PhoneNumber.js's internal format.
+
+## Installation
+
+PhoneNumber.js requires [grunt-cli](http://gruntjs.com/) to be installed in your system.
+If you do not have it yet, install it from [npm](https://npmjs.org/package/grunt-cli):
+
+    npm install -g grunt-cli
+
+Install dependencies and run grunt:
+
+    npm install
+    grunt
+
+If you want to update PhoneNumberMetadata.js, just run:
+
+    grunt
 
 # Copyright and license
 
