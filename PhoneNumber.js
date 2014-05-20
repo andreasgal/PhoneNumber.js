@@ -5,18 +5,18 @@ var PhoneNumber = (function (dataBase) {
   // Use strict in our context only - users might not want it
   'use strict';
 
-  const MAX_PHONE_NUMBER_LENGTH = 50;
-  const NON_ALPHA_CHARS = /[^a-zA-Z]/g;
-  const NON_DIALABLE_CHARS = /[^,#+\*\d]/g;
-  const NON_DIALABLE_CHARS_ONCE = new RegExp(NON_DIALABLE_CHARS.source);
-  const BACKSLASH = /\\/g;
-  const SPLIT_FIRST_GROUP = /^(\d+)(.*)$/;
-  const LEADING_PLUS_CHARS_PATTERN = /^[+\uFF0B]+/g;
+  var MAX_PHONE_NUMBER_LENGTH = 50;
+  var NON_ALPHA_CHARS = /[^a-zA-Z]/g;
+  var NON_DIALABLE_CHARS = /[^,#+\*\d]/g;
+  var NON_DIALABLE_CHARS_ONCE = new RegExp(NON_DIALABLE_CHARS.source);
+  var BACKSLASH = /\\/g;
+  var SPLIT_FIRST_GROUP = /^(\d+)(.*)$/;
+  var LEADING_PLUS_CHARS_PATTERN = /^[+\uFF0B]+/g;
 
   // Format of the string encoded meta data. If the name contains "^" or "$"
   // we will generate a regular expression from the value, with those special
   // characters as prefix/suffix.
-  const META_DATA_ENCODING = ["region",
+  var META_DATA_ENCODING = ["region",
                               "^(?:internationalPrefix)",
                               "nationalPrefix",
                               "^(?:nationalPrefixForParsing)",
@@ -26,7 +26,7 @@ var PhoneNumber = (function (dataBase) {
                               "^nationalPattern$",
                               "formats"];
 
-  const FORMAT_ENCODING = ["^pattern$",
+  var FORMAT_ENCODING = ["^pattern$",
                            "nationalFormat",
                            "^leadingDigits",
                            "nationalPrefixFormattingRule",
