@@ -106,8 +106,8 @@ var PhoneNumber = (function (dataBase) {
               // the formats field from the main country.
               if (typeof entry[0] == "string")
                 entry[0] = ParseMetaData(countryCode, entry[0]);
-              let formats = entry[0].formats;
-              let current = ParseMetaData(countryCode, entry[n]);
+              var formats = entry[0].formats;
+              var current = ParseMetaData(countryCode, entry[n]);
               current.formats = formats;
               return entry[n] = current;
             }
