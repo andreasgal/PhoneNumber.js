@@ -291,7 +291,7 @@ var PhoneNumber = (function (dataBase) {
       return null;
 
     // Detect and strip leading '+'.
-    if (number[0] === '+')
+    if (number[0] === '+' || defaultRegion === '001')
       return ParseInternationalNumber(number.replace(LEADING_PLUS_CHARS_PATTERN, ""));
 
     // Lookup the meta data for the given region.
