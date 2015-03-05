@@ -286,8 +286,9 @@ var PhoneNumber = (function (dataBase) {
     // Remove formating characters and whitespace.
     number = PhoneNumberNormalizer.Normalize(number);
 
-    // If there is no defaultRegion, we can't parse international access codes.
-    if (!defaultRegion && number[0] !== '+')
+    //@e can't parse international access codes f there is no defaultRegion
+	// or the defaultRegion is the global region.
+    if ((!defaultRegion || defaultRegion === '001') && number[0] !== '+')
       return null;
 
     // Detect and strip leading '+'.
