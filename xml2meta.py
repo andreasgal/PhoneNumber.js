@@ -114,7 +114,7 @@ if options.tests:
         print(example)
     sys.exit()
 
-print("const PHONE_NUMBER_META_DATA = {");
+print("var PHONE_NUMBER_META_DATA = {");
 for cc in map:
     entry = map[cc]
     if len(entry) > 1:
