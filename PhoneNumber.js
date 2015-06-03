@@ -28,7 +28,7 @@ var PhoneNumber = (function (dataBase) {
 
   var FORMAT_ENCODING = ["^pattern$",
                            "nationalFormat",
-                           "^leadingDigits",
+                           "^(leadingDigits)",
                            "nationalPrefixFormattingRule",
                            "internationalFormat"];
 
