@@ -39,7 +39,9 @@ def strip(x):
     return re.sub(r"\s", "", x)
 
 def pattern(x, type):
-    return strip(text(x[0].getElementsByTagName(type)[0].childNodes))
+    if len(x) > 0 and len(x[0].getElementsByTagName(type)) > 0:
+        return strip(text(x[0].getElementsByTagName(type)[0].childNodes))
+    return ""
 
 def format(x):
     if len(x) == 0:
